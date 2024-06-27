@@ -1,42 +1,54 @@
 const { Sequelize } = require('sequelize');
+
 // Konfigurasi koneksi Sequelize
-const sequelize = new Sequelize('2100016020dpsi', 'root', '', {
- host: 'localhost',
- dialect: 'mysql'
+const sequelize = new Sequelize('dpsi_2100016020', 'root', '', {
+    host: 'localhost',
+    dialect: 'mysql'
 });
 
-const sequelize = require('./index');
-const Sequelize = require('sequelize');
 
-const Customer = require('./customer')(sequelize, Sequelize);
-const Employee = require('./employee')(sequelize, Sequelize);
-const Product = require('./product')(sequelize, Sequelize);
-const Supplier = require('./supplier')(sequelize, Sequelize);
-const Order = require('./order')(sequelize, Sequelize);
-const Shipper = require('./shipper')(sequelize, Sequelize);
-const OrderDetail = require('./orderDetail')(sequelize, Sequelize);
-const Category = require('./category')(sequelize, Sequelize);
+const Customer = require('./customer')(sequelize);
+const Category = require('./category')(sequelize);
+const Shipper = require('./shipper')(sequelize);
 
-// Relasi antara model
-Customer.hasMany(Order, { foreignKey: 'customerID' });
-Order.belongsTo(Customer, { foreignKey: 'customerID' });
+const Employee = require('./employee')(sequelize);
+const Supplier = require('./supplier')(sequelize);
+const Product = require('./product')(sequelize);
+const Order = require('./order')(sequelize);
+const OrderDetail = require('./orderDetail')(sequelize);
 
-Employee.hasMany(Order, { foreignKey: 'employeeID' });
-Order.belongsTo(Employee, { foreignKey: 'employeeID' });
+const User = require('./user')(sequelize);
 
-Shipper.hasMany(Order, { foreignKey: 'shipperID' });
-Order.belongsTo(Shipper, { foreignKey: 'shipperID' });
 
-Supplier.hasMany(Product, { foreignKey: 'supplierID' });
+// Define associations
 Product.belongsTo(Supplier, { foreignKey: 'supplierID' });
-
-Category.hasMany(Product, { foreignKey: 'categoryID' });
 Product.belongsTo(Category, { foreignKey: 'categoryID' });
-
-Order.hasMany(OrderDetail, { foreignKey: 'orderID' });
+Order.belongsTo(Customer, { foreignKey: 'customerID' });
+Order.belongsTo(Employee, { foreignKey: 'employeeID' });
+Order.belongsTo(Shipper, { foreignKey: 'shipperID' });
 OrderDetail.belongsTo(Order, { foreignKey: 'orderID' });
-
-Product.hasMany(OrderDetail, { foreignKey: 'productID' });
 OrderDetail.belongsTo(Product, { foreignKey: 'productID' });
 
-module.exports = sequelize;
+
+
+// Sinkronkan model dengan database
+sequelize.sync()
+  .then(() => {
+    console.log('Database synchronized');
+  })
+  .catch(err => {
+    console.error('Error synchronizing database:', err);
+  });
+  
+module.exports = {
+    sequelize,
+    Customer,
+    Employee,
+    Product,
+    Supplier,
+    Category,
+    Order,
+    OrderDetail,
+    Shipper,
+    User,
+};

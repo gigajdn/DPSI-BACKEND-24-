@@ -2,35 +2,35 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 
-// Get all orders
+// Get all categories
 router.get('/', async (req, res) => {
     try {
-        const orders = await db.Order.findAll();
-        res.json(orders);
+        const categories = await db.Category.findAll();
+        res.json(categories);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Get order by ID
+// Get category by ID
 router.get('/:id', async (req, res) => {
     try {
-        const order = await db.Order.findByPk(req.params.id);
-        if (order) {
-            res.json(order);
+        const category = await db.Category.findByPk(req.params.id);
+        if (category) {
+            res.json(category);
         } else {
-            res.status(404).json({ error: 'Order not found' });
+            res.status(404).json({ error: 'Category not found' });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Create new order
+// Create new category
 router.post('/', async (req, res) => {
     try {
-        const newOrder = await db.Order.create(req.body);
-        res.status(201).json(newOrder);
+        const newCategory = await db.Category.create(req.body);
+        res.status(201).json(newCategory);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
